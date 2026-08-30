@@ -1,16 +1,40 @@
 <div align="center">
 
+<img src="VideoSplitter/Assets/VideoSplitterLogo.png" alt="VideoSplitter Logo" width="520"/>
+
 # VideoSplitter
 
 **Split videos without re-encoding and optionally upload the parts to Telegram.**
 
+[![Release](https://img.shields.io/github/v/release/cenkberkgungor/TelegramVideoSplitter?label=release)](https://github.com/cenkberkgungor/TelegramVideoSplitter/releases)
+[![Download](https://img.shields.io/badge/Download-v1.0.0-blue?logo=windows)](https://github.com/cenkberkgungor/TelegramVideoSplitter/releases/download/v1.0.0/VideoSplitter-v1.0.0-win-x64.zip)
+[![Platform](https://img.shields.io/badge/platform-Windows%20x64-lightgrey?logo=windows)](https://github.com/cenkberkgungor/TelegramVideoSplitter/releases)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
+### [⬇️ Download VideoSplitter v1.0.0 for Windows x64](https://github.com/cenkberkgungor/TelegramVideoSplitter/releases/download/v1.0.0/VideoSplitter-v1.0.0-win-x64.zip)
+
 [GitHub Profile](https://github.com/cenkberkgungor) ·
 [Repository](https://github.com/cenkberkgungor/TelegramVideoSplitter) ·
+[Releases](https://github.com/cenkberkgungor/TelegramVideoSplitter/releases) ·
 [Issues](https://github.com/cenkberkgungor/TelegramVideoSplitter/issues)
 
-**Current version: v1.0.0**
-
 </div>
+
+---
+
+## Screenshots
+
+### Main window
+
+<p align="center">
+  <img src="docs/screenshots/main-window.png" alt="VideoSplitter main window" width="760"/>
+</p>
+
+### About window
+
+<p align="center">
+  <img src="docs/screenshots/about-window.png" alt="VideoSplitter about window" width="640"/>
+</p>
 
 ---
 
@@ -54,8 +78,6 @@ gibi hedeflere yüklenebilir.
 
 VideoSplitter videoyu yeniden encode etmek yerine FFmpeg ile mevcut video ve ses akışlarını yeni dosyalara kopyalar.
 
-Temel yaklaşım:
-
 ```text
 Girdi videosu
      ↓
@@ -73,8 +95,6 @@ Part 1 / Part 2 / Part 3 ...
 > Not: Kesme noktaları videonun keyframe yapısına bağlıdır. Bu nedenle part süreleri her videoda tam olarak aynı olmayabilir.
 
 ### Dosya adlandırma
-
-Örnek:
 
 ```text
 Orijinal:
@@ -101,9 +121,25 @@ Telegram etkinleştirildiğinde uygulama:
 4. Süre, çözünürlük ve streaming bilgilerini Telegram'a gönderir.
 5. Geçici thumbnail dosyasını işlem sonunda siler.
 
-### Gereksinimler
+### İndirme
 
-Kaynak koddan derlemek için:
+Hazır Windows x64 sürümü:
+
+**[VideoSplitter v1.0.0 indir](https://github.com/cenkberkgungor/TelegramVideoSplitter/releases/download/v1.0.0/VideoSplitter-v1.0.0-win-x64.zip)**
+
+ZIP dosyasını çıkartın ve:
+
+```text
+VideoSplitter.exe
+```
+
+dosyasını çalıştırın.
+
+Bu paket **self-contained** olarak yayınlandığı için ayrıca .NET 10 yüklemeniz gerekmez.
+
+### Kaynak koddan derleme
+
+Gereksinimler:
 
 - Windows
 - Visual Studio 2026 veya uyumlu yeni sürüm
@@ -112,19 +148,13 @@ Kaynak koddan derlemek için:
 - FFmpeg / FFprobe
 - WTelegramClient
 
-### Kaynak koddan derleme
-
-1. Repository'yi klonlayın:
+Repository'yi klonlayın:
 
 ```bash
 git clone https://github.com/cenkberkgungor/TelegramVideoSplitter.git
 ```
 
-2. Solution'ı Visual Studio ile açın.
-3. NuGet paketlerini restore edin.
-4. `FFmpeg` klasöründe `ffmpeg.exe` ve `ffprobe.exe` bulunduğundan emin olun.
-5. `Release` yapılandırmasını seçin.
-6. Projeyi derleyin.
+Solution'ı Visual Studio ile açın, NuGet paketlerini restore edin ve `Release` yapılandırması ile derleyin.
 
 ### Telegram kurulumu
 
@@ -135,8 +165,6 @@ API bilgilerinizi:
 - Başka kişilerle paylaşmayın.
 - GitHub repository'sine commit etmeyin.
 - Ekran görüntülerinde açık şekilde göstermeyin.
-
-VideoSplitter Telegram ayarlarını yerel Windows kullanıcı hesabı altında saklar.
 
 ### Gizlilik
 
@@ -166,7 +194,7 @@ Optional Telegram integration can upload generated video parts directly to:
 ### Features
 
 - 🎬 Split videos without re-encoding
-- ✨ Stream-copy based workflow using `-c copy`
+- ✨ Stream-copy workflow using `-c copy`
 - 📦 User-defined maximum part size
 - 🏷️ Custom part labels
 - ⚡ Fast Start support for MP4/M4V/MOV
@@ -181,6 +209,20 @@ Optional Telegram integration can upload generated video parts directly to:
 - 🇹🇷 Turkish interface
 - 🇬🇧 English interface
 - 🔐 Telegram API settings protected for the current Windows user
+
+### Download
+
+Ready-to-run Windows x64 build:
+
+**[Download VideoSplitter v1.0.0](https://github.com/cenkberkgungor/TelegramVideoSplitter/releases/download/v1.0.0/VideoSplitter-v1.0.0-win-x64.zip)**
+
+Extract the ZIP file and run:
+
+```text
+VideoSplitter.exe
+```
+
+The release is self-contained, so a separate .NET 10 installation is not required.
 
 ### Build from source
 
@@ -211,7 +253,7 @@ Current release:
 v1.0.0
 ```
 
-Semantic versioning will be used:
+Semantic versioning:
 
 ```text
 1.0.0 → Initial stable release
