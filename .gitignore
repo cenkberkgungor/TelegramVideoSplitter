@@ -103,3 +103,6 @@ FFmpeg/ffmpeg.exe
 FFmpeg/ffprobe.exe
 VideoSplitter/FFmpeg/ffmpeg.exe
 VideoSplitter/FFmpeg/ffprobe.exe
+
+# Local Visual Studio publish profiles
+VideoSplitter/Properties/PublishProfiles/

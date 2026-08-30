@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.Windows;
@@ -162,7 +162,7 @@ namespace VideoSplitter
 
             if (version == null)
             {
-                return "1.0.0";
+                return "1.1.0";
             }
 
             return

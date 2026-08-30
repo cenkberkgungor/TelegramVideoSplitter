@@ -465,6 +465,15 @@ namespace VideoSplitter
             Stopwatch uploadStopwatch =
                 Stopwatch.StartNew();
 
+            // Telegram grouped media (album) en fazla 10 öğe destekler.
+            // MP4/M4V/MOV video partlarını burada biriktirip tek bir
+            // medya grubu halinde gönderiyoruz.
+            const int telegramAlbumMaxItems =
+                10;
+
+            List<InputMedia> pendingAlbumMedia =
+                new List<InputMedia>();
+
             for (int fileIndex = 0;
                  fileIndex < filePaths.Count;
                  fileIndex++)
@@ -530,229 +539,246 @@ namespace VideoSplitter
                     // UPLOAD
                     // =================================================
 
-                    InputFileBase uploadedFile =
-                        await client.UploadFileAsync(
-                            filePath,
-                            (uploadedBytes, totalBytes) =>
-                            {
-                                cancellationToken
-                                    .ThrowIfCancellationRequested();
-
-                                lock (progressLock)
-                                {
-                                    long overallUploadedBytes =
-                                        completedBytes +
-                                        uploadedBytes;
-
-                                    double nowSeconds =
-                                        uploadStopwatch
-                                        .Elapsed
-                                        .TotalSeconds;
-
-                                    bool isFinalCallback =
-                                        uploadedBytes >=
-                                        totalBytes;
-
-                                    if (!isFinalCallback &&
-                                        nowSeconds -
-                                        lastSpeedCheckSeconds <
-                                        0.25)
-                                    {
-                                        return;
-                                    }
-
-                                    double instantMBps =
-                                        0;
-
-                                    double deltaSeconds =
-                                        nowSeconds -
-                                        lastSpeedCheckSeconds;
-
-                                    long deltaBytes =
-                                        overallUploadedBytes -
-                                        lastOverallBytes;
-
-                                    if (deltaSeconds > 0 &&
-                                        deltaBytes >= 0)
-                                    {
-                                        instantMBps =
-                                            deltaBytes /
-                                            deltaSeconds /
-                                            1024.0 /
-                                            1024.0;
-                                    }
-
-                                    double averageMBps =
-                                        0;
-
-                                    if (nowSeconds > 0)
-                                    {
-                                        averageMBps =
-                                            overallUploadedBytes /
-                                            nowSeconds /
-                                            1024.0 /
-                                            1024.0;
-                                    }
-
-                                    double overallPercent =
-                                        overallTotalBytes > 0
-                                            ? overallUploadedBytes *
-                                              100.0 /
-                                              overallTotalBytes
-                                            : 0;
-
-                                    TimeSpan? remaining =
-                                        null;
-
-                                    if (averageMBps > 0)
-                                    {
-                                        double remainingMB =
-                                            (overallTotalBytes -
-                                             overallUploadedBytes) /
-                                            1024.0 /
-                                            1024.0;
-
-                                        remaining =
-                                            TimeSpan.FromSeconds(
-                                                Math.Max(
-                                                    0,
-                                                    remainingMB /
-                                                    averageMBps));
-                                    }
-
-                                    progress?.Report(
-                                        new TelegramUploadProgress
-                                        {
-                                            FileIndex =
-                                                currentFileNumber,
-
-                                            FileCount =
-                                                filePaths.Count,
-
-                                            FileName =
-                                                fileInfo.Name,
-
-                                            CurrentFileUploadedBytes =
-                                                uploadedBytes,
-
-                                            CurrentFileTotalBytes =
-                                                totalBytes,
-
-                                            OverallUploadedBytes =
-                                                overallUploadedBytes,
-
-                                            OverallTotalBytes =
-                                                overallTotalBytes,
-
-                                            OverallPercent =
-                                                Math.Clamp(
-                                                    overallPercent,
-                                                    0,
-                                                    100),
-
-                                            InstantMBps =
-                                                instantMBps,
-
-                                            AverageMBps =
-                                                averageMBps,
-
-                                            Elapsed =
-                                                uploadStopwatch.Elapsed,
-
-                                            Remaining =
-                                                remaining
-                                        });
-
-                                    lastOverallBytes =
-                                        overallUploadedBytes;
-
-                                    lastSpeedCheckSeconds =
-                                        nowSeconds;
-                                }
-                            });
-
-                    cancellationToken
-                        .ThrowIfCancellationRequested();
-
-                    // =================================================
-                    // TELEGRAM'A GERÇEK VIDEO OLARAK GÖNDER
-                    // =================================================
-
-                    if (videoMetadata != null &&
-                        videoMetadata.Width > 0 &&
-                        videoMetadata.Height > 0 &&
-                        videoMetadata.DurationSeconds > 0)
-                    {
-                        DocumentAttributeVideo videoAttribute =
-                            new DocumentAttributeVideo
-                            {
-                                w =
-                                    videoMetadata.Width,
-
-                                h =
-                                    videoMetadata.Height,
-
-                                duration =
-                                    videoMetadata.DurationSeconds,
-
-                                flags =
-                                    videoMetadata.SupportsStreaming
-                                        ? DocumentAttributeVideo
-                                          .Flags
-                                          .supports_streaming
-                                        : 0
-                            };
-
-                        DocumentAttributeFilename fileNameAttribute =
-                            new DocumentAttributeFilename
-                            {
-                                file_name =
-                                    fileInfo.Name
-                            };
-
-                        InputMediaUploadedDocument media =
-                            new InputMediaUploadedDocument(
-                                uploadedFile,
-                                videoMetadata.MimeType,
-                                videoAttribute,
-                                fileNameAttribute);
-
-                        if (!string.IsNullOrWhiteSpace(
-                                thumbnailPath) &&
-                            File.Exists(
-                                thumbnailPath))
+                InputFileBase uploadedFile =
+                    await client.UploadFileAsync(
+                        filePath,
+                        (uploadedBytes, totalBytes) =>
                         {
-                            InputFileBase uploadedThumbnail =
-                                await client.UploadFileAsync(
-                                    thumbnailPath,
-                                    (uploadedBytes, totalBytes) =>
+                            cancellationToken
+                                .ThrowIfCancellationRequested();
+
+                            lock (progressLock)
+                            {
+                                long overallUploadedBytes =
+                                    completedBytes +
+                                    uploadedBytes;
+
+                                double nowSeconds =
+                                    uploadStopwatch
+                                    .Elapsed
+                                    .TotalSeconds;
+
+                                bool isFinalCallback =
+                                    uploadedBytes >=
+                                    totalBytes;
+
+                                if (!isFinalCallback &&
+                                    nowSeconds -
+                                    lastSpeedCheckSeconds <
+                                    0.25)
+                                {
+                                    return;
+                                }
+
+                                double instantMBps =
+                                    0;
+
+                                double deltaSeconds =
+                                    nowSeconds -
+                                    lastSpeedCheckSeconds;
+
+                                long deltaBytes =
+                                    overallUploadedBytes -
+                                    lastOverallBytes;
+
+                                if (deltaSeconds > 0 &&
+                                    deltaBytes >= 0)
+                                {
+                                    instantMBps =
+                                        deltaBytes /
+                                        deltaSeconds /
+                                        1024.0 /
+                                        1024.0;
+                                }
+
+                                double averageMBps =
+                                    0;
+
+                                if (nowSeconds > 0)
+                                {
+                                    averageMBps =
+                                        overallUploadedBytes /
+                                        nowSeconds /
+                                        1024.0 /
+                                        1024.0;
+                                }
+
+                                double overallPercent =
+                                    overallTotalBytes > 0
+                                        ? overallUploadedBytes *
+                                          100.0 /
+                                          overallTotalBytes
+                                        : 0;
+
+                                TimeSpan? remaining =
+                                    null;
+
+                                if (averageMBps > 0)
+                                {
+                                    double remainingMB =
+                                        (overallTotalBytes -
+                                         overallUploadedBytes) /
+                                        1024.0 /
+                                        1024.0;
+
+                                    remaining =
+                                        TimeSpan.FromSeconds(
+                                            Math.Max(
+                                                0,
+                                                remainingMB /
+                                                averageMBps));
+                                }
+
+                                progress?.Report(
+                                    new TelegramUploadProgress
                                     {
-                                        cancellationToken
-                                            .ThrowIfCancellationRequested();
+                                        FileIndex =
+                                            currentFileNumber,
+
+                                        FileCount =
+                                            filePaths.Count,
+
+                                        FileName =
+                                            fileInfo.Name,
+
+                                        CurrentFileUploadedBytes =
+                                            uploadedBytes,
+
+                                        CurrentFileTotalBytes =
+                                            totalBytes,
+
+                                        OverallUploadedBytes =
+                                            overallUploadedBytes,
+
+                                        OverallTotalBytes =
+                                            overallTotalBytes,
+
+                                        OverallPercent =
+                                            Math.Clamp(
+                                                overallPercent,
+                                                0,
+                                                100),
+
+                                        InstantMBps =
+                                            instantMBps,
+
+                                        AverageMBps =
+                                            averageMBps,
+
+                                        Elapsed =
+                                            uploadStopwatch.Elapsed,
+
+                                        Remaining =
+                                            remaining
                                     });
 
-                            media.thumb =
-                                uploadedThumbnail;
+                                lastOverallBytes =
+                                    overallUploadedBytes;
 
-                            media.flags |=
-                                InputMediaUploadedDocument
-                                .Flags
-                                .has_thumb;
-                        }
+                                lastSpeedCheckSeconds =
+                                    nowSeconds;
+                            }
+                        });
 
-                        await client.SendMessageAsync(
-                            peer,
-                            fileInfo.Name,
-                            media);
-                    }
-                    else
+                cancellationToken
+                    .ThrowIfCancellationRequested();
+
+                // =================================================
+                // TELEGRAM'A GERÇEK VIDEO OLARAK GÖNDER
+                // =================================================
+
+                if (videoMetadata != null &&
+                    videoMetadata.Width > 0 &&
+                    videoMetadata.Height > 0 &&
+                    videoMetadata.DurationSeconds > 0)
+                {
+                    DocumentAttributeVideo videoAttribute =
+                        new DocumentAttributeVideo
+                        {
+                            w =
+                                videoMetadata.Width,
+
+                            h =
+                                videoMetadata.Height,
+
+                            duration =
+                                videoMetadata.DurationSeconds,
+
+                            flags =
+                                videoMetadata.SupportsStreaming
+                                    ? DocumentAttributeVideo
+                                      .Flags
+                                      .supports_streaming
+                                    : 0
+                        };
+
+                    DocumentAttributeFilename fileNameAttribute =
+                        new DocumentAttributeFilename
+                        {
+                            file_name =
+                                fileInfo.Name
+                        };
+
+                    InputMediaUploadedDocument media =
+                        new InputMediaUploadedDocument(
+                            uploadedFile,
+                            videoMetadata.MimeType,
+                            videoAttribute,
+                            fileNameAttribute);
+
+                    if (!string.IsNullOrWhiteSpace(
+                            thumbnailPath) &&
+                        File.Exists(
+                            thumbnailPath))
                     {
-                        // Video metadata alınamazsa eski güvenli yönteme dön.
-                        await client.SendMediaAsync(
-                            peer,
-                            fileInfo.Name,
-                            uploadedFile);
+                        InputFileBase uploadedThumbnail =
+                            await client.UploadFileAsync(
+                                thumbnailPath,
+                                (uploadedBytes, totalBytes) =>
+                                {
+                                    cancellationToken
+                                        .ThrowIfCancellationRequested();
+                                });
+
+                        media.thumb =
+                            uploadedThumbnail;
+
+                        media.flags |=
+                            InputMediaUploadedDocument
+                            .Flags
+                            .has_thumb;
                     }
+
+                    pendingAlbumMedia.Add(
+                        media);
+
+                    // Telegram bir medya grubunda en fazla 10 öğeye izin verir.
+                    // 10'a ulaştığımızda mevcut grubu gönderip yeni grup başlat.
+                    if (pendingAlbumMedia.Count >=
+                        telegramAlbumMaxItems)
+                    {
+                        await SendPendingAlbumAsync(
+                            client,
+                            peer,
+                            pendingAlbumMedia,
+                            cancellationToken);
+                    }
+                }
+                else
+                {
+                    // Video metadata alınamazsa önce bekleyen video albümünü
+                    // gönder, ardından bu dosyayı eski güvenli yöntemle tek başına gönder.
+                    await SendPendingAlbumAsync(
+                        client,
+                        peer,
+                        pendingAlbumMedia,
+                        cancellationToken);
+
+                    await client.SendMediaAsync(
+                        peer,
+                        fileInfo.Name,
+                        uploadedFile);
+                }
                 }
                 finally
                 {
@@ -858,6 +884,13 @@ namespace VideoSplitter
                     });
             }
 
+            // Son grupta 10'dan az video kaldıysa şimdi gönder.
+            await SendPendingAlbumAsync(
+                client,
+                peer,
+                pendingAlbumMedia,
+                cancellationToken);
+
             uploadStopwatch.Stop();
 
             progress?.Report(
@@ -911,6 +944,49 @@ namespace VideoSplitter
                     Remaining =
                         TimeSpan.Zero
                 });
+        }
+
+        // =========================================================
+        // TELEGRAM GROUPED MEDIA / ALBUM
+        // =========================================================
+
+        private static async Task SendPendingAlbumAsync(
+            Client client,
+            InputPeer peer,
+            List<InputMedia> pendingAlbumMedia,
+            CancellationToken cancellationToken)
+        {
+            if (pendingAlbumMedia.Count == 0)
+            {
+                return;
+            }
+
+            cancellationToken
+                .ThrowIfCancellationRequested();
+
+            if (pendingAlbumMedia.Count == 1)
+            {
+                // Telegram albümü en az iki öğe ile anlamlıdır.
+                // Tek part kaldıysa normal video mesajı olarak gönder.
+                await client.SendMessageAsync(
+                    peer,
+                    "",
+                    pendingAlbumMedia[0]);
+            }
+            else
+            {
+                // WTelegramClient helper'ı uploaded media nesnelerini
+                // Telegram'ın grouped media / album formatına çevirir.
+                await client.SendAlbumAsync(
+                    peer,
+                    pendingAlbumMedia,
+                    "");
+            }
+
+            pendingAlbumMedia.Clear();
+
+            cancellationToken
+                .ThrowIfCancellationRequested();
         }
 
         // =========================================================
