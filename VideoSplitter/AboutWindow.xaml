@@ -1,0 +1,129 @@
+﻿<Window x:Class="VideoSplitter.AboutWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Hakkında - VideoSplitter"
+        Icon="Assets/VideoSplitter.ico"
+        Height="650"
+        Width="560"
+        MinHeight="650"
+        MinWidth="560"
+        MaxHeight="650"
+        MaxWidth="560"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner"
+        Background="#F5F7FA">
+
+    <Grid>
+
+        <Border Background="White"
+                Margin="20"
+                Padding="30"
+                CornerRadius="14">
+
+            <StackPanel>
+
+                <Image Source="Assets/VideoSplitterLogo.png"
+                       Height="235"
+                       Stretch="Uniform"
+                       Margin="0,-10,0,0"/>
+
+                <TextBlock x:Name="VersionTextBlock"
+                           Text="Version 1.0.0"
+                           FontSize="15"
+                           FontWeight="SemiBold"
+                           Foreground="#2563EB"
+                           HorizontalAlignment="Center"
+                           Margin="0,-4,0,18"/>
+
+                <TextBlock x:Name="DescriptionTextBlock"
+                           Text="Videoları kalite kaybı olmadan parçalara böler ve isteğe bağlı olarak Telegram'a yükler."
+                           FontSize="14"
+                           Foreground="#4B5563"
+                           TextAlignment="Center"
+                           TextWrapping="Wrap"
+                           LineHeight="21"
+                           Margin="15,0,15,20"/>
+
+                <Border Background="#F8FAFC"
+                        BorderBrush="#E5E7EB"
+                        BorderThickness="1"
+                        CornerRadius="9"
+                        Padding="15"
+                        Margin="0,0,0,18">
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="130"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock x:Name="DeveloperLabelTextBlock"
+                                   Text="Geliştirici"
+                                   FontWeight="SemiBold"
+                                   Foreground="#374151"/>
+
+                        <TextBlock Grid.Column="1"
+                                   Text="Cenk Berk Güngör"
+                                   Foreground="#374151"/>
+                    </Grid>
+
+                </Border>
+
+                <Grid Margin="0,0,0,16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button x:Name="GitHubProfileButton"
+                            Grid.Column="0"
+                            Content="GitHub Profili"
+                            Height="38"
+                            Margin="0,0,5,0"
+                            Cursor="Hand"
+                            Click="GitHubProfileButton_Click"/>
+
+                    <Button x:Name="ProjectRepositoryButton"
+                            Grid.Column="1"
+                            Content="Proje Deposu"
+                            Height="38"
+                            Margin="5,0,0,0"
+                            Cursor="Hand"
+                            Click="ProjectRepositoryButton_Click"/>
+                </Grid>
+
+                <Button x:Name="ReportIssueButton"
+                        Content="Sorun Bildir / GitHub Issues"
+                        Height="36"
+                        Margin="0,0,0,18"
+                        Cursor="Hand"
+                        Click="ReportIssueButton_Click"/>
+
+                <TextBlock x:Name="TechnologyTextBlock"
+                           Text="Powered by FFmpeg • Telegram integration with WTelegramClient"
+                           FontSize="12"
+                           Foreground="#9CA3AF"
+                           HorizontalAlignment="Center"
+                           TextAlignment="Center"
+                           Margin="0,0,0,8"/>
+
+                <TextBlock Text="© 2026 Cenk Berk Güngör"
+                           FontSize="12"
+                           Foreground="#9CA3AF"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,18"/>
+
+                <Button x:Name="CloseButton"
+                        Content="KAPAT"
+                        Height="40"
+                        FontWeight="SemiBold"
+                        IsDefault="True"
+                        Click="CloseButton_Click"/>
+
+            </StackPanel>
+
+        </Border>
+
+    </Grid>
+
+</Window>
