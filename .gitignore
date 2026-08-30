@@ -97,7 +97,9 @@ logs/
 *.tar
 *.gz
 
-# Do NOT ignore FFmpeg executables here if the project intentionally ships them.
-# If you do not want to commit FFmpeg binaries, uncomment:
-# FFmpeg/ffmpeg.exe
-# FFmpeg/ffprobe.exe
+# FFmpeg binaries
+# Keep these out of GitHub; users can download FFmpeg separately.
+FFmpeg/ffmpeg.exe
+FFmpeg/ffprobe.exe
+VideoSplitter/FFmpeg/ffmpeg.exe
+VideoSplitter/FFmpeg/ffprobe.exe
