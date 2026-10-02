@@ -7,11 +7,11 @@
 **Split videos without re-encoding and optionally upload the parts to Telegram.**
 
 [![Release](https://img.shields.io/github/v/release/cenkberkgungor/TelegramVideoSplitter?label=release)](https://github.com/cenkberkgungor/TelegramVideoSplitter/releases)
-[![Download](https://img.shields.io/badge/Download-v1.1.0-blue?logo=windows)](https://github.com/cenkberkgungor/TelegramVideoSplitter/releases/download/v1.1.0/VideoSplitter-v1.1.0-win-x64.zip)
+[![Download](https://img.shields.io/badge/Download-v1.2.0-blue?logo=windows)](https://github.com/cenkberkgungor/TelegramVideoSplitter/releases/download/v1.2.0/VideoSplitter-v1.2.0-win-x64.zip)
 [![Platform](https://img.shields.io/badge/platform-Windows%20x64-lightgrey?logo=windows)](https://github.com/cenkberkgungor/TelegramVideoSplitter/releases)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-### [⬇️ Download VideoSplitter v1.1.0 for Windows x64](https://github.com/cenkberkgungor/TelegramVideoSplitter/releases/download/v1.1.0/VideoSplitter-v1.1.0-win-x64.zip)
+### [⬇️ Download VideoSplitter v1.2.0 for Windows x64](https://github.com/cenkberkgungor/TelegramVideoSplitter/releases/download/v1.2.0/VideoSplitter-v1.2.0-win-x64.zip)
 
 [GitHub Profile](https://github.com/cenkberkgungor) ·
 [Repository](https://github.com/cenkberkgungor/TelegramVideoSplitter) ·
@@ -126,7 +126,7 @@ Telegram etkinleştirildiğinde uygulama:
 
 Hazır Windows x64 sürümü:
 
-**[VideoSplitter v1.1.0 indir](https://github.com/cenkberkgungor/TelegramVideoSplitter/releases/download/v1.1.0/VideoSplitter-v1.1.0-win-x64.zip)**
+**[VideoSplitter v1.2.0 indir](https://github.com/cenkberkgungor/TelegramVideoSplitter/releases/download/v1.2.0/VideoSplitter-v1.2.0-win-x64.zip)**
 
 ZIP dosyasını çıkartın ve:
 
@@ -216,7 +216,7 @@ Optional Telegram integration can upload generated video parts directly to:
 
 Ready-to-run Windows x64 build:
 
-**[Download VideoSplitter v1.1.0](https://github.com/cenkberkgungor/TelegramVideoSplitter/releases/download/v1.1.0/VideoSplitter-v1.1.0-win-x64.zip)**
+**[Download VideoSplitter v1.2.0](https://github.com/cenkberkgungor/TelegramVideoSplitter/releases/download/v1.2.0/VideoSplitter-v1.2.0-win-x64.zip)**
 
 Extract the ZIP file and run:
 
@@ -252,7 +252,7 @@ Open the solution in Visual Studio, restore NuGet packages, ensure FFmpeg binari
 Current release:
 
 ```text
-v1.1.0
+v1.2.0
 ```
 
 Semantic versioning:
@@ -260,7 +260,7 @@ Semantic versioning:
 ```text
 1.0.0 → Initial stable release
 1.1.0 → Telegram grouped media / album uploads
-1.1.0 → New features
+1.2.0 → Album caption + delete local parts after upload
 1.1.1 → Bug fixes
 2.0.0 → Major changes
 ```

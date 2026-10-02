@@ -351,7 +351,8 @@ namespace VideoSplitter
             IReadOnlyList<string> filePaths,
             int parallelTransfers,
             IProgress<TelegramUploadProgress>? progress,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken,
+            string? albumCaption = null)
         {
             if (destination == null)
             {
@@ -418,6 +419,15 @@ namespace VideoSplitter
 
             cancellationToken
                 .ThrowIfCancellationRequested();
+
+            string normalizedCaption =
+                (albumCaption ?? "").Trim();
+
+            if (normalizedCaption.Length > 1024)
+            {
+                normalizedCaption =
+                    normalizedCaption.Substring(0, 1024);
+            }
 
             WTelegram.Helpers.Log =
                 (_, _) => { };
@@ -761,7 +771,8 @@ namespace VideoSplitter
                             client,
                             peer,
                             pendingAlbumMedia,
-                            cancellationToken);
+                            cancellationToken,
+                            normalizedCaption);
                     }
                 }
                 else
@@ -772,11 +783,18 @@ namespace VideoSplitter
                         client,
                         peer,
                         pendingAlbumMedia,
-                        cancellationToken);
+                        cancellationToken,
+                        normalizedCaption);
+
+                    string singleCaption =
+                        !string.IsNullOrWhiteSpace(
+                            normalizedCaption)
+                            ? normalizedCaption
+                            : fileInfo.Name;
 
                     await client.SendMediaAsync(
                         peer,
-                        fileInfo.Name,
+                        singleCaption,
                         uploadedFile);
                 }
                 }
@@ -889,7 +907,8 @@ namespace VideoSplitter
                 client,
                 peer,
                 pendingAlbumMedia,
-                cancellationToken);
+                cancellationToken,
+                normalizedCaption);
 
             uploadStopwatch.Stop();
 
@@ -954,7 +973,8 @@ namespace VideoSplitter
             Client client,
             InputPeer peer,
             List<InputMedia> pendingAlbumMedia,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken,
+            string albumCaption = "")
         {
             if (pendingAlbumMedia.Count == 0)
             {
@@ -964,13 +984,16 @@ namespace VideoSplitter
             cancellationToken
                 .ThrowIfCancellationRequested();
 
+            string caption =
+                albumCaption ?? "";
+
             if (pendingAlbumMedia.Count == 1)
             {
                 // Telegram albümü en az iki öğe ile anlamlıdır.
                 // Tek part kaldıysa normal video mesajı olarak gönder.
                 await client.SendMessageAsync(
                     peer,
-                    "",
+                    caption,
                     pendingAlbumMedia[0]);
             }
             else
@@ -980,7 +1003,7 @@ namespace VideoSplitter
                 await client.SendAlbumAsync(
                     peer,
                     pendingAlbumMedia,
-                    "");
+                    caption);
             }
 
             pendingAlbumMedia.Clear();

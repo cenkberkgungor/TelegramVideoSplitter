@@ -236,6 +236,21 @@ namespace VideoSplitter
                     "Testimizde 4 en iyi sonucu verdi.",
                     "4 gave the best result in our test.");
 
+            TelegramAlbumLabel.Text =
+                T(
+                    "Albüm Açıklaması",
+                    "Album Caption");
+
+            TelegramAlbumHintTextBlock.Text =
+                T(
+                    "Boş bırakılırsa video dosya adı kullanılır.",
+                    "If empty, video file name is used.");
+
+            TelegramDeletePartsCheckBox.Content =
+                T(
+                    "Yüklemeden sonra yerel partları sil",
+                    "Delete local parts after upload");
+
             TurkishButton.FontWeight =
                 _language ==
                 AppLanguage.Turkish
@@ -349,7 +364,7 @@ namespace VideoSplitter
 
             if (version == null)
             {
-                return "1.1.0";
+                return "1.2.0";
             }
 
             return
@@ -1579,6 +1594,23 @@ namespace VideoSplitter
                     int parallelTransfers =
                         GetSelectedParallelTransfers();
 
+                    string albumCaption =
+                        TelegramAlbumNameTextBox.Text?.Trim() ?? "";
+
+                    if (string.IsNullOrWhiteSpace(
+                            albumCaption))
+                    {
+                        albumCaption =
+                            Path.GetFileNameWithoutExtension(
+                                inputFile);
+                    }
+
+                    if (albumCaption.Length > 1024)
+                    {
+                        albumCaption =
+                            albumCaption.Substring(0, 1024);
+                    }
+
                     Progress<TelegramUploadProgress>
                         uploadProgress =
                             new Progress<TelegramUploadProgress>(
@@ -1591,7 +1623,8 @@ namespace VideoSplitter
                             finalOutputParts,
                             parallelTransfers,
                             uploadProgress,
-                            cancellationToken);
+                            cancellationToken,
+                            albumCaption);
                     }
                     catch (OperationCanceledException)
                     {
@@ -1638,15 +1671,66 @@ namespace VideoSplitter
                     SetStatus(
                         "TelegramSuccess");
 
+                    int uploadedCount =
+                        finalOutputParts.Count;
+
+                    string deleteInfo = "";
+
+                    bool deleteRequested =
+                        TelegramDeletePartsCheckBox.IsChecked ==
+                        true;
+
+                    if (deleteRequested &&
+                        uploadedCount > 0)
+                    {
+                        int deleted = 0;
+
+                        foreach (string partPath
+                                 in finalOutputParts)
+                        {
+                            try
+                            {
+                                if (File.Exists(
+                                        partPath))
+                                {
+                                    File.Delete(
+                                        partPath);
+                                }
+
+                                deleted++;
+                            }
+                            catch
+                            {
+                            }
+                        }
+
+                        if (deleted >= uploadedCount)
+                        {
+                            deleteInfo =
+                                T(
+                                    "\nYerel partlar silindi.",
+                                    "\nLocal parts deleted.");
+                        }
+                        else
+                        {
+                            deleteInfo =
+                                T(
+                                    $"\nYerel partlar silindi: {deleted}/{uploadedCount}.",
+                                    $"\nLocal parts deleted: {deleted}/{uploadedCount}.");
+                        }
+                    }
+
                     MessageBox.Show(
                         T(
                             $"Video başarıyla bölündü ve Telegram'a yüklendi.\n\n" +
-                            $"Yüklenen part sayısı: {finalOutputParts.Count}\n" +
-                            $"Hedef: {GetTelegramDestinationText(destination)}",
+                            $"Yüklenen part sayısı: {uploadedCount}\n" +
+                            $"Hedef: {GetTelegramDestinationText(destination)}" +
+                            $"{deleteInfo}",
 
                             $"Video split and uploaded to Telegram successfully.\n\n" +
-                            $"Parts uploaded: {finalOutputParts.Count}\n" +
-                            $"Destination: {GetTelegramDestinationText(destination)}"),
+                            $"Parts uploaded: {uploadedCount}\n" +
+                            $"Destination: {GetTelegramDestinationText(destination)}" +
+                            $"{deleteInfo}"),
 
                         T(
                             "İşlem Tamamlandı",
@@ -1839,6 +1923,9 @@ namespace VideoSplitter
                 !working;
 
             PartSuffixTextBox.IsEnabled =
+                !working;
+
+            TelegramAlbumNameTextBox.IsEnabled =
                 !working;
 
             TelegramUploadCheckBox.IsEnabled =

@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="VideoSplitter v1.1.0"
+        Title="VideoSplitter v1.2.0"
         Icon="Assets/VideoSplitter.ico"
         Height="860"
         Width="800"
@@ -292,7 +292,7 @@
                                 </Grid>
 
                                 <!-- PARALEL TRANSFER -->
-                                <Grid>
+                                <Grid Margin="0,0,0,14">
 
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="150"/>
@@ -329,6 +329,49 @@
                                                Margin="15,0,0,0"/>
 
                                 </Grid>
+
+                                <!-- ALBÜM AÇIKLAMASI -->
+                                <Grid Margin="0,0,0,12">
+
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="150"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock x:Name="TelegramAlbumLabel"
+                                               Grid.Column="0"
+                                               Grid.Row="0"
+                                               Text="Albüm Açıklaması"
+                                               FontWeight="SemiBold"
+                                               VerticalAlignment="Center"/>
+
+                                    <TextBox x:Name="TelegramAlbumNameTextBox"
+                                             Grid.Column="1"
+                                             Grid.Row="0"
+                                             Height="34"
+                                             VerticalContentAlignment="Center"
+                                             Padding="10,0"/>
+
+                                    <TextBlock x:Name="TelegramAlbumHintTextBlock"
+                                               Grid.Column="1"
+                                               Grid.Row="1"
+                                               Text="Boş bırakılırsa video dosya adı kullanılır."
+                                               Foreground="#808080"
+                                               Margin="0,4,0,0"
+                                               TextWrapping="Wrap"/>
+
+                                </Grid>
+
+                                <CheckBox x:Name="TelegramDeletePartsCheckBox"
+                                          Content="Yüklemeden sonra yerel partları sil"
+                                          FontSize="13"
+                                          VerticalContentAlignment="Center"
+                                          IsChecked="True"/>
 
                             </StackPanel>
 
@@ -431,7 +474,7 @@
                                         VerticalAlignment="Center">
 
                                 <TextBlock x:Name="FooterVersionTextBlock"
-                                           Text="v1.1.0"
+                                           Text="v1.2.0"
                                            FontWeight="SemiBold"
                                            Foreground="#6B7280"/>
 
